@@ -4,7 +4,7 @@ from .models import WebAPI, Arg
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    # return HttpResponse("Hello, world. You're at the polls index.")
     last_one = WebAPI.objects.last()
     api_name_id = last_one.id
     api_name = last_one.api_name
@@ -19,6 +19,7 @@ def index(request):
         option_list=option_list,
         tool_description=description,
     )
-    # return render(request, 'index.html', data)
+    data = dict(xdict="helllo")
+    return render(request, 'sangerdev/index.html', data)
 
 
