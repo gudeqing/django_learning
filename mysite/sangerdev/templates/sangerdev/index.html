@@ -3,15 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        *{
+            margin: 0 0 0 0;
+        }
+        .head_body{
+            width: 100%;
+            height: 45px;
+            background-color: #F9F9F9;
+        }
+        .page_body{
+            width: 100%;
+
+        }
+        .body_{
+            margin: auto;
+            background-color: #F9F9F9;
+            width: 1000px;
+            height: auto !important;
+            min-height: 600px;
+        }
+        .body_ .body_left{
+            margin-left: 15px;
+            width: 600px;
+            min-height: 600px;
+            float: left;
+            background-color: white;
+        }
+        .body_ .body_right{
+            margin-right: 15px;
+            width: 360px;
+            min-height: 600px;
+            float: right;
+            background-color: white;
+            border: 2px solid;
+            border-color: black;
+        }
+        .body_input{
+            margin: 5px 3px 5px 5px;
+            height: 30px;
+            width: 300px;
+        }
+
+    </style>
 </head>
 <body>
-<textarea rows="100" cols="100">
-def A():
-    {{xdict}}
-    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-class C(object):
-    A()
+    <div class="head_body">
 
-</textarea>
+    </div>
+    <div class="page_body">
+        <div class="body_">
+            <div class="body_left">
+                {{xdict}}
+            </div>
+            <div class="body_right">
+                <div class="body_input">
+                    <form name="text" method="get">
+                        <select name="zhao">
+                          <option value ="volvo">Volvo</option>
+                          <option value ="saab">Saab</option>
+                          <option value="opel">Opel</option>
+                          <option value="audi">Audi</option>
+                        </select>
+                        <input name="type" type="text" height="30" align="center"><input type="submit">
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </body>
 </html>
