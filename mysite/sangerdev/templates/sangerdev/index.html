@@ -63,7 +63,7 @@
     <div class="page_body">
         <div class="body_">
             <div class="body_left">
-                <textarea cols="1" rows="1" id="xx">{{ raw_python_code }}</textarea>
+                <textarea cols="1" rows="1" style="width: 20px;height: 20px" id="xx">{{ raw_python_code }}</textarea>
                 <input type="button" onClick="Copy('xx')" value="CopyCode" />
                 <a href="{% static code_path %}" download="{{ raw_tool_name }}.py">Download</a>
                 <article id="article">
