@@ -92,5 +92,6 @@ def index(request):
         which_api=which_api,
         which_template=which_template,
         code_path='sangerdev/' + api_name.split('.')[-1] + '.py',
+        raw_tool_name=api_name.split(".")[-1],
     )
     return render(request, 'sangerdev/index.html', data)
