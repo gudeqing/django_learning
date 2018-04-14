@@ -1,3 +1,6 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'sangerdev/python_code_style.css' %}" />
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,16 +27,16 @@
             min-height: 600px;
         }
         .body_ .body_left{
-            margin-left: 15px;
-            width: 600px;
+            margin-left: 5px;
+            width: 610px;
             min-height: 600px;
             float: left;
             background-color: white;
         }
         .body_ .body_right{
-            margin-right: 15px;
-            width: 360px;
-            min-height: 600px;
+            margin-right: 5px;
+            width: 370px;
+            min-height: 80px;
             float: right;
             background-color: white;
             border: 2px solid;
@@ -44,31 +47,60 @@
             height: 30px;
             width: 300px;
         }
-
     </style>
+    <script type="text/javascript">
+        function Copy(_id){
+            var obj=document.getElementById(_id);
+            obj.select();
+            document.execCommand("Copy");
+            alert("copied!");
+        }
+    </script>
 </head>
 <body>
     <div class="head_body">
-
     </div>
     <div class="page_body">
         <div class="body_">
             <div class="body_left">
-                {{xdict}}
+                <textarea cols="1" rows="1" id="xx">{{ raw_python_code }}</textarea>
+                <input type="button" onClick="Copy('xx')" value="CopyCode" />
+                <a href="{% static code_path %}" download="{{ raw_tool_name }}.py">Download</a>
+                <article id="article">
+                    {% autoescape off %}
+                    {{python_code}}
+                    {% endautoescape %}
+                </article>
             </div>
             <div class="body_right">
                 <div class="body_input">
                     <form name="text" method="get">
-                        <select name="zhao">
-                          <option value ="volvo">Volvo</option>
-                          <option value ="saab">Saab</option>
-                          <option value="opel">Opel</option>
-                          <option value="audi">Audi</option>
+                        <label> ChooseAPI
+                        <select name="which_api">
+                        {% for each in all_api_names %}
+                            {% if each.api_name == which_api %}
+                                <option value={{ each.id }} selected="selected">{{ each.api_name }}</option>
+                            {% else %}
+                                <option value={{ each.id }}>{{ each.api_name }}</option>
+                            {% endif %}
+                        {% endfor %}
                         </select>
-                        <input name="type" type="text" height="30" align="center"><input type="submit">
+                        </label>
+                        <label> ChooseTemplate
+                        <select name="which_template" >
+                            {% for each in template_types %}
+                                {% if each == which_template %}
+                                    <option value={{ each }} selected="selected">{{ each }}</option>
+                                {% else %}
+                                    <option value={{ each }}>{{ each }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </label>
+                        <br>
+                        <input type="submit" value="click HERE to view the code">
                     </form>
                 </div>
-
             </div>
         </div>
     </div>

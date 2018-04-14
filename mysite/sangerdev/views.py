@@ -10,12 +10,21 @@ from pygments.formatters import HtmlFormatter
 
 
 def index(request):
-    # return HttpResponse("Hello, world. You're at the polls index.")
-    last_one = WebAPI.objects.last()
-    api_name_id = last_one.id
-    api_name = last_one.api_name
-    package_rel_path = last_one.package_rel_path
-    description = last_one.description
+    get_info = request.GET
+    if not request.GET:
+        select_one = WebAPI.objects.last()
+        which_template = "tool"
+        which_api =select_one.api_name
+        # select_one = WebAPI.objects.filter(id=get_info['which_api'])[0]
+    else:
+        select_one = WebAPI.objects.filter(id=get_info['which_api'])[0]
+        which_template = get_info['which_template']
+        which_api = select_one.api_name
+    api_name_id = select_one.id
+    api_name = select_one.api_name
+    package_rel_path = select_one.package_rel_path
+    description = select_one.description
+    controller = select_one.controller
     option_list = Arg.objects.filter(api_name_id=api_name_id).values()
     new_option_list = list()
     for tmp_dict in option_list:
@@ -28,27 +37,60 @@ def index(request):
     # format python code
     env = Environment()
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    tool_template_file = base_dir +'/templates/sangerdev/tool_template.jinja2'
-    print(tool_template_file)
-    tool_template = env.from_string(open(tool_template_file).read())
-    tool_code = tool_template.render(
-        raw_tool_name=api_name.split(".")[-1],
-        tool_name=''.join(x.capitalize() for x in api_name.split("_")),
-        tool_path=api_name,
-        package_rel_path=package_rel_path,
-        called_script='_'.join(package_rel_path.split("/")[-1].split(".")[:-1]),
-        option_list=new_option_list,
-        tool_description=description,
-    )
-    tool_code2html = highlight(tool_code, PythonLexer(), HtmlFormatter())
     # format css file for python code
     css_file = base_dir + '/static/sangerdev/python_code_style.css'
     if os.path.exists(css_file):
         pass
     else:
-        with open(css_file, 'w', encoding="utf-8") as f:
+        with open(css_file,'w',encoding="utf-8") as f:
             css_code = HtmlFormatter().get_style_defs('.highlight')
             f.write(css_code)
+
+    # format python code for tool
+    if get_info and get_info['which_template'] == "tool":
+        tool_template_file = base_dir +'/templates/sangerdev/tool_template.jinja2'
+        print(tool_template_file)
+        tool_template = env.from_string(open(tool_template_file, encoding="utf-8").read())
+        tool_code = tool_template.render(
+            raw_tool_name=api_name.split(".")[-1],
+            tool_name=''.join(x.capitalize() for x in api_name.split(".")[-1].split("_")),
+            tool_path=api_name,
+            package_rel_path=package_rel_path,
+            called_script='_'.join(package_rel_path.split("/")[-1].split(".")[:-1]),
+            option_list=new_option_list,
+            tool_description=description,
+        )
+        python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
+    elif get_info and get_info['which_template'] == "web_api":
+        template_file = base_dir + '/templates/sangerdev/webapi_template.jinja2'
+        print("web_api_template:", template_file)
+        template = env.from_string(open(template_file, encoding="utf-8").read())
+        tool_code = template.render(
+            raw_tool_name=api_name.split(".")[-1],
+            tool_name=''.join(x.capitalize() for x in api_name.split(".")[-1].split("_")),
+            option_list=new_option_list,
+            controller=controller,
+            controller_class = ''.join(x.capitalize() for x in controller.split("_")),
+            to_file_path = controller.split("_controller")[0]
+        )
+        python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
+    else:
+        python_code = "Please Select Options in the left area"
+        tool_code = "Please Select Options in the left area"
+
+    # save code
+    code_path = base_dir + '/static/sangerdev/' + api_name.split(".")[-1] + '.py'
+    with open(code_path, "w", encoding="utf-8") as f:
+        f.write(tool_code+'/n')
+    print(code_path)
     # render
-    data = dict(python_code=tool_code2html, )
+    data = dict(
+        python_code=python_code,
+        all_api_names=WebAPI.objects.all(),
+        raw_python_code=tool_code,
+        template_types=["tool", "web_api", "workflow", "db_api"],
+        which_api=which_api,
+        which_template=which_template,
+        code_path='sangerdev/' + api_name.split('.')[-1] + '.py',
+    )
     return render(request, 'sangerdev/index.html', data)

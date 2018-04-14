@@ -3,30 +3,28 @@ import web
 import json
 import datetime
 from collections import OrderedDict
-from mainapp.controllers.project.{{ controller }} import {{ controller_class }}
-from mbio.api.to_file.{{ to_file_path }} import *
+from mainapp.controllers.project.ref_rna_controller import RefRnaController
+from mbio.api.to_file.ref_rna import *
 from mainapp.libs.signature import check_sig
 import unittest
 import os
-{#
-tool_name, raw_tool_name, controller, controller_class, to_file_path, option_list
-#}
 
-class {{ tool_name }}Action({{ controller_class }}):
-    """ {{ tool_name }} controller"""
+
+class WgcnaPrepareAction(RefRnaController):
+    """ WgcnaPrepare controller"""
     def __init__(self):
-        super({{ tool_name }}Action, self).__init__(instant=False)
+        super(WgcnaPrepareAction, self).__init__(instant=False)
         # specify where is the single workflow for the current task
-        self.task_name = '{{ to_file_path }}.report.{{ raw_tool_name }}'
+        self.task_name = 'ref_rna.report.wgcna_prepare'
         # specify all params needed, they will be saved as value of 'params' in the main table
         self.expected_args = ["task_id", "submit_location", 'task_type']
-    {%- for opt_dict in option_list %}
-        self.expected_args += ['{{ opt_dict['name'] }}'],
-    {%- endfor %}
+        self.expected_args += ['exp'],
+        self.expected_args += ['me'],
+        self.expected_args += ['cv'],
         # receive the params from web
         self.input_data = web.input()
         # in which the main table will be created
-        self.collection = "{{ raw_tool_name }}"
+        self.collection = "wgcna_prepare"
 
     @check_sig
     def POST(self):
@@ -36,7 +34,7 @@ class {{ tool_name }}Action({{ controller_class }}):
         packed_params = self.pack_params()
         main_id, main_table_name = self.create_main_table(packed_params, self.collection)
         self.prepare_workflow_options(main_id, self.collection, main_table_name)
-        task_info = super({{ tool_name }}Action,self).POST()
+        task_info = super(WgcnaPrepareAction,self).POST()
         task_info['content'] = {'ids': {'id': str(main_id), 'name': main_table_name}}
         return json.dumps(task_info)
 
@@ -69,10 +67,10 @@ class {{ tool_name }}Action({{ controller_class }}):
         return json.dumps(params_dict, sort_keys=True, separators=(',',':'))
 
     def create_main_table(self, packed_params, collection_name):
-        result_info = self.{{ to_file_path }}.get_main_info(self.input_data.exp_id, 'which_collection ?')
+        result_info = self.ref_rna.get_main_info(self.input_data.exp_id, 'which_collection ?')
         self.project_sn = result_info["project_sn"]
         exp_info = json.loads(result_info['params'])
-        name = "{{ tool_name }}_{}_".format('ReformatYourTableNameHere')'
+        name = "WgcnaPrepare_{}_".format('ReformatYourTableNameHere')'
         time_now = datetime.datetime.now()
         name += time_now.strftime("%Y%m%d_%H%M%S")
         main_info = dict(
@@ -81,7 +79,7 @@ class {{ tool_name }}Action({{ controller_class }}):
             task_id=self.input_data.task_id,
             name=name,
             created_ts=time_now.strftime('%Y-%m-%d %H:%M:%S'),
-            desc='{{ tool_name }} main table',
+            desc='WgcnaPrepare main table',
             params=packed_params,
             status="start"
         )
@@ -99,7 +97,7 @@ class {{ tool_name }}Action({{ controller_class }}):
             # "exp_matrix": self.input_data.exp_id+";"+self.input_data.geneset_id,
         })
         # prepare to file
-        to_files = ["{{ to_file_path }}.YOUR_tofile_Func(FuncParam)", ]
+        to_files = ["ref_rna.YOUR_tofile_Func(FuncParam)", ]
         # 把参数交给workflow运行相应的tools， 其中to_file用于准备tool的输入文件
         self.set_sheet_data(
             name=self.task_name,
@@ -121,21 +119,15 @@ class TestFunction(unittest.TestCase):
         cmd += 'post '
         cmd += "-fr no "
         cmd += '-c {} '.format("client03")
-        cmd += "s/{{ to_file_path }}/{{ raw_tool_name }} "
+        cmd += "s/ref_rna/wgcna_prepare "
         cmd += "-b http://192.168.12.102:9090 "
         args = dict(
             task_id="TASK_ID_TO_TEST",
             task_type="2",  # maybe you need to change it
-            submit_location="{{ tool_name }}",
-        {%- for opt_dict in option_list %}
-            {%- if 'default' in opt_dict %}
-            {{ opt_dict['name'] }}="{{ opt_dict['default'] }}",
-            {%- elif 'type' in opt_dict and opt_dict['type']=="infile" %}
-            {{ opt_dict['name'] }}="AbsoluteFilePath",
-            {%- else %}
-            {{ opt_dict['name'] }}="?",
-            {%- endif %}
-        {%- endfor %}
+            submit_location="WgcnaPrepare",
+            exp="unknown",
+            me="0.5",
+            cv="0.3",
         )
         arg_names, arg_values = args.keys(), args.values()
         cmd += '-n "{}" -d "{}" '.format(";".join(str(x) for x in arg_names), ";".join(arg_values))
@@ -144,4 +136,4 @@ class TestFunction(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main()/n
