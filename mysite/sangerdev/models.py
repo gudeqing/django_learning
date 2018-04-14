@@ -4,9 +4,10 @@ from django.db import models
 
 
 class WebAPI(models.Model):
-    api_name = models.CharField(max_length=100, default="xa_xb")
-    package_rel_path = models.CharField(max_length=200, default="/*/*.py")
+    api_name = models.CharField(max_length=100, default="ref_rna.exp_venn")
+    package_rel_path = models.CharField(max_length=200, default="/wgcna/wgcna_prepare.py")
     description = models.CharField(max_length=500, default="simple description")
+    controller = models.CharField(max_length=100, default="ref_rna_controller")
 
     def __str__(self):
         return self.api_name
