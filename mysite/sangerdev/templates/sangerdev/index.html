@@ -28,24 +28,23 @@
         }
         .body_ .body_left{
             margin-left: 5px;
-            width: 610px;
-            min-height: 600px;
-            float: left;
+            width: 1000px;
+            min-height: 400px;
+{#            float: left;#}
             background-color: white;
         }
-        .body_ .body_right{
-            margin-right: 5px;
-            width: 370px;
-            min-height: 80px;
-            float: right;
-            background-color: white;
-            border: 2px solid;
-            border-color: black;
-        }
+{#        .body_ .body_right{#}
+{#            margin-right: 5px;#}
+{#            width: 370px;#}
+{#            min-height: 100px;#}
+{#            float: right;#}
+{#            background-color: white;#}
+{#            border: 2px ;#}
+{#        }#}
         .body_input{
             margin: 5px 3px 5px 5px;
-            height: 30px;
-            width: 300px;
+            height: 35px;
+{#            width: 300px;#}
         }
     </style>
     <script type="text/javascript">
@@ -63,16 +62,6 @@
     <div class="page_body">
         <div class="body_">
             <div class="body_left">
-                <textarea cols="1" rows="1" style="width: 20px;height: 20px" id="xx">{{ raw_python_code }}</textarea>
-                <input type="button" onClick="Copy('xx')" value="CopyCode" />
-                <a href="{% static code_path %}" download="{{ raw_tool_name }}.py">Download</a>
-                <article id="article">
-                    {% autoescape off %}
-                    {{python_code}}
-                    {% endautoescape %}
-                </article>
-            </div>
-            <div class="body_right">
                 <div class="body_input">
                     <form name="text" method="get">
                         <label> ChooseAPI
@@ -97,9 +86,21 @@
                             {% endfor %}
                         </select>
                         </label>
-                        <br>
-                        <input type="submit" value="click HERE to view the code">
+{#                        <input type="submit" value="Click to view the code">#}
+                        <button type="submit" value="Submit">Click to view the code</button>
                     </form>
+                </div>
+                <div>
+                    <textarea cols="1" rows="1" style="width: 20px;height: 20px" id="xx">{{ raw_python_code }}</textarea>
+                    <input type="button" onClick="Copy('xx')" value="CopyCode" />
+                    <a href="{% static code_path %}" download="{{ raw_tool_name }}.py">Download</a>
+                    <a href="/admin">Login to Add More Arguments First</a>
+                    <hr>
+                    <article id="article">
+                        {% autoescape off %}
+                        {{python_code}}
+                        {% endautoescape %}
+                    </article>
                 </div>
             </div>
         </div>

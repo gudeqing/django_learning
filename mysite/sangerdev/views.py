@@ -72,8 +72,12 @@ def index(request):
         )
         python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
     else:
-        python_code = "Please Select Options in the left area"
-        tool_code = "Please Select Options in the left area"
+        python_code = """
+        <h2>step1: Login and set options</h2>
+        <h2>step2: Select Options Above</h2>
+        <h2>step3: Check the code and modified it</h2>
+        """
+        tool_code = "None"
 
     # save code
     code_path = base_dir + '/static/sangerdev/' + api_name.split(".")[-1] + '.py'
@@ -88,7 +92,12 @@ def index(request):
         template_types=["tool", "web_api", "workflow", "db_api"],
         which_api=which_api,
         which_template=which_template,
-        code_path='sangerdev/' + api_name.split('.')[-1] + '.py',
+        code_path=request.path + api_name.split('.')[-1] + '.py',
         raw_tool_name=api_name.split(".")[-1],
     )
+    # print(request.get_full_path())
+    from django.contrib import admin
+    print("admin:",admin.site.urls)
     return render(request, 'sangerdev/index.html', data)
+
+
