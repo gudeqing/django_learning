@@ -6,12 +6,12 @@ from biocluster.tool import Tool
 from biocluster.core.exceptions import OptionError
 import unittest
 # import pandas as pd
-__author__ = 'gdq'
+__author__ = 'who'
 
 
 class {{ tool_name }}Agent(Agent):
     """
-    {{ tool_description }}
+    {{ raw_tool_name}} description
     """
     def __init__(self, parent):
         super({{ tool_name }}Agent, self).__init__(parent)
@@ -26,33 +26,33 @@ class {{ tool_name }}Agent(Agent):
         pass
 
     def set_resource(self):
-        self._cpu = 1
-        self._memory = "{}G".format('?')
+        self._cpu = 4
+        self._memory = "{}G".format('15')
 
     def end(self):
         result_dir = self.add_upload_dir(self.output_dir)
         result_dir.add_relpath_rules([
-            [".", "", "{{ result_description }}"]
+            [".", "", "{{ tool_name }}"]
             ])
         """
         # more detail
         result_dir.add_regexp_rules([
             [r"*.xls", "xls", "xxx"],
             [r"*.list", "", "xxx"],
-            ])
+        ])
         """
         super({{ tool_name }}Agent, self).end()
 
 
 class {{ tool_name }}Tool(Tool):
     """
-    {{ tool_description }}
+    {{ raw_tool_name }} description
     """
     def __init__(self, config):
         super({{ tool_name }}Tool, self).__init__(config)
         software_dir = self.config.SOFTWARE_DIR
         self.python_path = 'program/Python/bin/python'
-        self.{{ called_script }} = self.config.PACKAGE_DIR + '/rna/{{ called_script }}.py'
+        self.{{ called_script }} = self.config.PACKAGE_DIR + '/{{ package_rel_path }}.py'
         self.gcc = software_dir + '/gcc/5.1.0/bin'
         self.gcc_lib = software_dir + '/gcc/5.1.0/lib64'
         self.set_environ(PATH=self.gcc, LD_LIBRARY_PATH=self.gcc_lib)
@@ -88,19 +88,15 @@ class {{ tool_name }}Tool(Tool):
             self.set_error("{} Failed. >>>{}".format(cmd_name, cmd))
 
     def set_output(self):
-        pass
-        '''Example:
-        diff_files = glob.glob(self.option("output") + '/*_vs_*.xls')
-        diff_list = glob.glob(self.option("output") + '/*.DE.list')
-        diff_summary = glob.glob(self.option("output") + '/*summary.xls')
-        all_files = diff_files + diff_list + diff_summary
-        for each in all_files:
-            fname = os.path.basename(each)
-            link = os.path.join(self.output_dir, fname)
+        target_files = glob.glob(self.work_dir + '/*_vs_*.xls')
+        ......
+        all_files += glob.glob(self.work_dir + '/result.xls')
+        for each in target_files:
+            name = os.path.basename(each)
+            link = os.path.join(self.output_dir, name)
             if os.path.exists(link):
                 os.remove(link)
             os.link(each, link)
-        '''
 
     def run(self):
         super({{ tool_name }}Tool, self).run()
@@ -117,11 +113,10 @@ class TestFunction(unittest.TestCase):
         import random
         from mbio.workflows.single import SingleWorkflow
         from biocluster.wsheet import Sheet
-        test_dir='/mnt/ilustre/users/sanger-dev/biocluster/src/mbio/tools/{{ tool_parent_dir }}/test_files'
         data = {
             "id": "{{ tool_name }}" + str(random.randint(1, 10000)),
             "type": "tool",
-            "name": "{{ tool_parent_dir }}.{{ raw_tool_name }}",
+            "name": "{{ tool_path }}",
             "instant": False,
             "options": dict(
             {%- for opt_dict in option_list %}

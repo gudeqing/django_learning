@@ -14,8 +14,7 @@ def index(request):
     if not request.GET:
         select_one = WebAPI.objects.last()
         which_template = "tool"
-        which_api =select_one.api_name
-        # select_one = WebAPI.objects.filter(id=get_info['which_api'])[0]
+        which_api = select_one.api_name
     else:
         select_one = WebAPI.objects.filter(id=get_info['which_api'])[0]
         which_template = get_info['which_template']
@@ -23,7 +22,6 @@ def index(request):
     api_name_id = select_one.id
     api_name = select_one.api_name
     package_rel_path = select_one.package_rel_path
-    description = select_one.description
     controller = select_one.controller
     option_list = Arg.objects.filter(api_name_id=api_name_id).values()
     new_option_list = list()
@@ -52,13 +50,12 @@ def index(request):
         print(tool_template_file)
         tool_template = env.from_string(open(tool_template_file, encoding="utf-8").read())
         tool_code = tool_template.render(
+            tool_path=api_name,
             raw_tool_name=api_name.split(".")[-1],
             tool_name=''.join(x.capitalize() for x in api_name.split(".")[-1].split("_")),
-            tool_path=api_name,
-            package_rel_path=package_rel_path,
-            called_script='_'.join(package_rel_path.split("/")[-1].split(".")[:-1]),
+            package_rel_path=package_rel_path.replace(".", "/"),
+            called_script=package_rel_path.split(".")[-1],
             option_list=new_option_list,
-            tool_description=description,
         )
         python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
     elif get_info and get_info['which_template'] == "web_api":
