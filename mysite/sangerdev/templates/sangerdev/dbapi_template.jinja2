@@ -1,0 +1,27 @@
+# !/usr/bin/python
+# -*- coding: utf-8 -*-
+from bson.objectid import ObjectId
+from api_base import ApiBase
+import json
+import pandas as pd
+import unittest
+import datetime
+import glob
+
+{# tool_name raw_tool_name #}
+class {{ tool_name }}(ApiBase):
+    def __init__(self, bind_object):
+        super({{ tool_name }}, self).__init__(bind_object)
+
+    def add_{{ raw_tool_name }}_detail(self, output_dir, main_id):
+        result_file = glob.glob(output_dir + '/*vs*.xls')[0]
+        result_pd = pd.read_table(result_file, header=0)
+        result_pd['{{ raw_tool_name }}_id'] = ObjectId(main_id)
+        result_dict_list = result_pd.to_dict("records")
+        self.create_db_table('{{ raw_tool_name }}_detail', result_dict_list)
+        self.update_db_record('{{ raw_tool_name }}', main_id, status="end", )
+
+
+if __name__ == '__main__':
+    {{ tool_name }} = {{ tool_name }}(None)
+    {{ tool_name }}.add_{{ raw_tool_name }}_detail("/mnt/ilustre..../WgcnaModule", "5aaf7efca4e1af606ad5e527")

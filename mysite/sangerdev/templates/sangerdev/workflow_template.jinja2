@@ -1,0 +1,48 @@
+# -*- coding: utf-8 -*-
+from biocluster.workflow import Workflow
+
+{# tool_name raw_tool_name project_type #}
+class {{ tool_name }}Workflow(Workflow):
+    """
+    {{ tool_name }} description
+    """
+    def __init__(self, wsheet_object):
+        self._sheet = wsheet_object
+        super({{ tool_name }}Workflow, self).__init__(wsheet_object)
+        options = list()
+        for each in self._sheet.options():
+            options.append(dict(name=each, type="string"))
+        self.add_option(options)
+        self.set_options(self._sheet.options())
+        self.{{ raw_tool_name }} = self.add_tool("{{ project_type }}.{{ raw_tool_name }}")
+        self.dump_tool = self.api.api("{{ project_type }}.{{ tool_name }}")
+
+    def run(self):
+        self.{{ raw_tool_name }}.on("end", self.set_db)
+        self.run_{{ raw_tool_name }}()
+        super({{ tool_name }}Workflow, self).run()
+
+    def set_db(self):
+        """
+        保存结果表到mongo数据库中
+        """
+        workflow_output = self.get_workflow_output_dir()
+        # add result info
+        dump_tool.add_{{ raw_tool_name }}_detail(self.{{ raw_tool_name }}.output_dir, self.option("main_id"))
+        dump_tool.update_db_record('{{ raw_tool_name }}', self.option('main_id'), output_dir=workflow_output, status="end")
+        self.end()
+
+    def end(self):
+        result_dir = self.add_upload_dir(self.{{ raw_tool_name }}.output_dir)
+        result_dir.add_relpath_rules([
+            [".", "", "{{ tool_name }}"],
+        ])
+        super({{ tool_name }}Workflow, self).end()
+
+    def get_workflow_output_dir(self):
+        workflow_output = self._sheet.output
+        if workflow_output.startswith('tsanger:'):
+            workflow_output = workflow_output.replace('tsanger:','/mnt/ilustre/tsanger-data/')
+        else:
+            workflow_output = workflow_output.replace('sanger:','/mnt/ilustre/data/')
+        return workflow_output

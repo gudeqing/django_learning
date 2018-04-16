@@ -10,21 +10,21 @@ import unittest
 import os
 
 
-class ExpVennAction(RefRnaController):
-    """ ExpVenn controller"""
+class ClusterAction(RefRnaController):
+    """ Cluster controller"""
     def __init__(self):
-        super(ExpVennAction, self).__init__(instant=False)
+        super(ClusterAction, self).__init__(instant=False)
         # specify where is the single workflow for the current task
-        self.task_name = 'ref_rna.report.exp_venn'
+        self.task_name = 'ref_rna.report.cluster'
         # specify all params needed, they will be saved as value of 'params' in the main table
         self.expected_args = ["task_id", "submit_location", 'task_type']
         self.expected_args += ['exp_matrix'],
-        self.expected_args += ['threshold'],
-        self.expected_args += ['group'],
+        self.expected_args += ['scm'],
+        self.expected_args += ['scd'],
         # receive the params from web
         self.input_data = web.input()
         # in which the main table will be created
-        self.collection = "exp_venn"
+        self.collection = "cluster"
 
     @check_sig
     def POST(self):
@@ -34,7 +34,7 @@ class ExpVennAction(RefRnaController):
         packed_params = self.pack_params()
         main_id, main_table_name = self.create_main_table(packed_params, self.collection)
         self.prepare_workflow_options(main_id, self.collection, main_table_name)
-        task_info = super(ExpVennAction,self).POST()
+        task_info = super(ClusterAction,self).POST()
         task_info['content'] = {'ids': {'id': str(main_id), 'name': main_table_name}}
         return json.dumps(task_info)
 
@@ -70,7 +70,7 @@ class ExpVennAction(RefRnaController):
         result_info = self.ref_rna.get_main_info(self.input_data.exp_id, 'which_collection ?')
         self.project_sn = result_info["project_sn"]
         exp_info = json.loads(result_info['params'])
-        name = "ExpVenn_{}_".format('ReformatYourTableNameHere')'
+        name = "Cluster_{}_".format('ReformatYourTableNameHere')'
         time_now = datetime.datetime.now()
         name += time_now.strftime("%Y%m%d_%H%M%S")
         main_info = dict(
@@ -79,7 +79,7 @@ class ExpVennAction(RefRnaController):
             task_id=self.input_data.task_id,
             name=name,
             created_ts=time_now.strftime('%Y-%m-%d %H:%M:%S'),
-            desc='ExpVenn main table',
+            desc='Cluster main table',
             params=packed_params,
             status="start"
         )
@@ -119,15 +119,15 @@ class TestFunction(unittest.TestCase):
         cmd += 'post '
         cmd += "-fr no "
         cmd += '-c {} '.format("client03")
-        cmd += "s/ref_rna/exp_venn "
+        cmd += "s/ref_rna/cluster "
         cmd += "-b http://192.168.12.102:9090 "
         args = dict(
             task_id="TASK_ID_TO_TEST",
             task_type="2",  # maybe you need to change it
-            submit_location="ExpVenn",
+            submit_location="Cluster",
             exp_matrix="None",
-            threshold="2",
-            group="group.info",
+            scm="Average",
+            scd="Euclidean",
         )
         arg_names, arg_values = args.keys(), args.values()
         cmd += '-n "{}" -d "{}" '.format(";".join(str(x) for x in arg_names), ";".join(arg_values))

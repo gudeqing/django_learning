@@ -71,6 +71,23 @@ def index(request):
             to_file_path = controller.split("_controller")[0]
         )
         python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
+    elif get_info and get_info['which_template'] == "db_api":
+        template_file = base_dir + '/templates/sangerdev/dbapi_template.jinja2'
+        template = env.from_string(open(template_file, encoding="utf-8").read())
+        tool_code = template.render(
+            raw_tool_name=api_name.split(".")[-1],
+            tool_name=''.join(x.capitalize() for x in api_name.split(".")[-1].split("_")),
+        )
+        python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
+    elif get_info and get_info['which_template'] == "workflow":
+        template_file = base_dir + '/templates/sangerdev/workflow_template.jinja2'
+        template = env.from_string(open(template_file, encoding="utf-8").read())
+        tool_code = template.render(
+            raw_tool_name=api_name.split(".")[-1],
+            tool_name=''.join(x.capitalize() for x in api_name.split(".")[-1].split("_")),
+            project_type=controller.split("_controller")[0],
+        )
+        python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
     else:
         python_code = """
         <h2>step1: Login and set options</h2>
