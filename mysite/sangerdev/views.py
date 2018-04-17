@@ -92,7 +92,7 @@ def index(request):
     else:
         python_code = """
         <h2>step1: Login and set options</h2>
-        <h2>step2: Select Options Above</h2>
+        <h2>step2: Select API and Template Options Above</h2>
         <h2>step3: Check the code and modified it</h2>
         """
         tool_code = "None"
