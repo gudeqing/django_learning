@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from biocluster.workflow import Workflow
 
-{# tool_name raw_tool_name project_type #}
+{# tool_name raw_tool_name project_type option_list #}
 class {{ tool_name }}Workflow(Workflow):
     """
     {{ tool_name }} description
@@ -15,16 +15,25 @@ class {{ tool_name }}Workflow(Workflow):
         self.add_option(options)
         self.set_options(self._sheet.options())
         self.{{ raw_tool_name }} = self.add_tool("{{ project_type }}.{{ raw_tool_name }}")
-        self.dump_tool = self.api.api("{{ project_type }}.{{ tool_name }}")
+        self.dump_tool = self.api.api("{{ project_type }}.{{ raw_tool_name }}")
 
     def run(self):
         self.{{ raw_tool_name }}.on("end", self.set_db)
         self.run_{{ raw_tool_name }}()
         super({{ tool_name }}Workflow, self).run()
 
+    def run_{{ raw_tool_name }}(self):
+        options = dict(
+        {%- for opt_dict in option_list %}
+            {{ opt_dict['name'] }}=self.option('{{ opt_dict['name'] }}'),
+        {%- endfor %}
+        )
+        self.{{ raw_tool_name }}.set_options(options)
+        self.{{ raw_tool_name }}.run()
+
     def set_db(self):
         """
-        保存结果表到mongo数据库中
+        dump data to db
         """
         workflow_output = self.get_workflow_output_dir()
         # add result info

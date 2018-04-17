@@ -90,7 +90,7 @@ class {{ tool_name }}Tool(Tool):
     def set_output(self):
         target_files = glob.glob(self.work_dir + '/*_vs_*.xls')
         ......
-        all_files += glob.glob(self.work_dir + '/result.xls')
+        target_files += glob.glob(self.work_dir + '/result.xls')
         for each in target_files:
             name = os.path.basename(each)
             link = os.path.join(self.output_dir, name)

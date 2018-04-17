@@ -86,6 +86,7 @@ def index(request):
             raw_tool_name=api_name.split(".")[-1],
             tool_name=''.join(x.capitalize() for x in api_name.split(".")[-1].split("_")),
             project_type=controller.split("_controller")[0],
+            option_list=new_option_list,
         )
         python_code = highlight(tool_code, PythonLexer(), HtmlFormatter())
     else:
