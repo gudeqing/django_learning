@@ -15,7 +15,7 @@ class WebAPI(models.Model):
 class Arg(models.Model):
     api_name = models.ForeignKey(WebAPI, on_delete=models.CASCADE)
     arg_types = ['int', 'float', 'string', 'infile', 'outfile', ]
-    arg_name = models.CharField(max_length=80, help_text="Argument Name")
+    arg_name = models.CharField(max_length=100, help_text="Argument Name")
     arg_type = models.CharField(
         max_length=20,
         choices=zip(arg_types, arg_types),

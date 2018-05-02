@@ -100,7 +100,7 @@ def index(request):
     # save code
     code_path = base_dir + '/static/sangerdev/' + api_name.split(".")[-1] + '.py'
     with open(code_path, "w", encoding="utf-8") as f:
-        f.write(tool_code+'/n')
+        f.write(tool_code)
     print(code_path)
     # render
     data = dict(
