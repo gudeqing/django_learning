@@ -95,10 +95,10 @@ class {{ tool_name }}Action({{ controller_class }}):
         options.update({
             "main_id": str(main_id),
             "update_info": json.dumps({str(main_id): collection_name})  # to update sg_status
-            # "exp_matrix": self.input_data.exp_id+";"+self.input_data.geneset_id,
+            # "tofile_Param": self.input_data.geneset_id,
         })
         # prepare to file
-        to_files = ["{{ to_file_path }}.YOUR_tofile_Func(FuncParam)", ]
+        to_files = ["{{ to_file_path }}.YOUR_tofile_Func(tofile_Param)", ]
         # 把参数交给workflow运行相应的tools， 其中to_file用于准备tool的输入文件
         self.set_sheet_data(
             name=self.task_name,
