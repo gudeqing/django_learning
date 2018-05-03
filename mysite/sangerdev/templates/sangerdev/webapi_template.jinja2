@@ -51,7 +51,7 @@ class {{ tool_name }}Action({{ controller_class }}):
         target_dir = 'sanger' if self.input_data.client == "client01" else 'tsanger-data'
         base_path = "/mnt/ilustre/{}/".format(target_dir)
         trait_path = base_path + self.input_data.trait_path
-        ''''
+        '''
         return True
 
     def pack_params(self):
