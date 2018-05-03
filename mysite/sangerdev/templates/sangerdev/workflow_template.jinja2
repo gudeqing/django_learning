@@ -37,8 +37,8 @@ class {{ tool_name }}Workflow(Workflow):
         """
         workflow_output = self.get_workflow_output_dir()
         # add result info
-        dump_tool.add_{{ raw_tool_name }}_detail(self.{{ raw_tool_name }}.output_dir, self.option("main_id"))
-        dump_tool.update_db_record('{{ raw_tool_name }}', self.option('main_id'), output_dir=workflow_output, status="end")
+        self.dump_tool.add_{{ raw_tool_name }}_detail(self.{{ raw_tool_name }}.output_dir, self.option("main_id"))
+        self.dump_tool.update_db_record('{{ raw_tool_name }}', self.option('main_id'), output_dir=workflow_output, status="end")
         self.end()
 
     def end(self):
