@@ -69,7 +69,7 @@ class {{ tool_name }}Action({{ controller_class }}):
         return json.dumps(params_dict, sort_keys=True, separators=(',',':'))
 
     def create_main_table(self, packed_params, collection_name):
-        result_info = self.{{ to_file_path }}.get_main_info(self.input_data.task_id, 'sg_task')
+        result_info = self.{{ to_file_path }}.get_task_info(self.input_data.task_id)
         self.project_sn = result_info["project_sn"]
         name = "{{ tool_name }}_{}_".format('ReformatYourTableNameHere')
         time_now = datetime.datetime.now()
