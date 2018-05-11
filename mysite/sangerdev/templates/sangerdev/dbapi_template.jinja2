@@ -17,8 +17,8 @@ class {{ tool_name }}(ApiBase):
         result_pd = pd.read_table(result_file, header=0)
         result_pd['{{ raw_tool_name }}_id'] = ObjectId(main_id)
         result_dict_list = result_pd.to_dict("records")
-        self.create_db_table('{{ raw_tool_name }}_detail', result_dict_list)
-        self.update_db_record('{{ raw_tool_name }}', main_id, status="end", )
+        self.create_db_table('sg_{{ raw_tool_name }}_detail', result_dict_list)
+        self.update_db_record('sg_{{ raw_tool_name }}', main_id, status="end", )
 
 
 if __name__ == '__main__':

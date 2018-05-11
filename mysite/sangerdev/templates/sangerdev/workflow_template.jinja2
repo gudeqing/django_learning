@@ -18,6 +18,7 @@ class {{ tool_name }}Workflow(Workflow):
         self.dump_tool = self.api.api("{{ project_type }}.{{ raw_tool_name }}")
 
     def run(self):
+        # self.start_listener(); self.fire("start") # if you have no tools, you should use this line
         self.{{ raw_tool_name }}.on("end", self.set_db)
         self.run_{{ raw_tool_name }}()
         super({{ tool_name }}Workflow, self).run()
@@ -38,7 +39,7 @@ class {{ tool_name }}Workflow(Workflow):
         workflow_output = self.get_workflow_output_dir()
         # add result info
         self.dump_tool.add_{{ raw_tool_name }}_detail(self.{{ raw_tool_name }}.output_dir, self.option("main_id"))
-        self.dump_tool.update_db_record('{{ raw_tool_name }}', self.option('main_id'), output_dir=workflow_output, status="end")
+        self.dump_tool.update_db_record('sg_{{ raw_tool_name }}', self.option('main_id'), output_dir=workflow_output, status="end")
         self.end()
 
     def end(self):

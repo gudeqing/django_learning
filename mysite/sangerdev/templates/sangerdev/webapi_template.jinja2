@@ -26,19 +26,7 @@ class {{ tool_name }}Action({{ controller_class }}):
         # receive the params from web
         self.input_data = web.input()
         # in which the main table will be created
-        self.collection = "{{ raw_tool_name }}"
-
-    @check_sig
-    def POST(self):
-        check = self.check_params()
-        if check is not True:
-            return check
-        packed_params = self.pack_params()
-        main_id, main_table_name = self.create_main_table(packed_params, self.collection)
-        self.prepare_workflow_options(main_id, self.collection, main_table_name)
-        task_info = super({{ tool_name }}Action,self).POST()
-        task_info['content'] = {'ids': {'id': str(main_id), 'name': main_table_name}}
-        return json.dumps(task_info)
+        self.collection = "sg_{{ raw_tool_name }}"
 
     def check_params(self):
         for arg in self.expected_args:
@@ -109,6 +97,18 @@ class {{ tool_name }}Action({{ controller_class }}):
             project_sn=self.project_sn,
             task_id=self.input_data.task_id
         )
+
+    @check_sig
+    def POST(self):
+        check = self.check_params()
+        if check is not True:
+            return check
+        packed_params = self.pack_params()
+        main_id, main_table_name = self.create_main_table(packed_params, self.collection)
+        self.prepare_workflow_options(main_id, self.collection, main_table_name)
+        task_info = super({{ tool_name }}Action,self).POST()
+        task_info['content'] = {'ids': {'id': str(main_id), 'name': main_table_name}}
+        return json.dumps(task_info)
 
 
 class TestFunction(unittest.TestCase):
