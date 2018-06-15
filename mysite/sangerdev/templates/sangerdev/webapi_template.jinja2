@@ -73,6 +73,8 @@ class {{ tool_name }}Action({{ controller_class }}):
             status="start"
         )
         main_id = self.ref_rna.insert_main_table(collection_name, main_info)
+        if hasattr(self.input_data, geneset_id) and self.input_data.geneset_id.lower() not in ["all", "refall", "none"]:
+            self.{{ controller }}.insert_geneset_info(self.input_data.geneset_id, collection_name, main_id)
         return main_id, name
 
     def prepare_workflow_options(self, main_id, collection_name, main_table_name):
